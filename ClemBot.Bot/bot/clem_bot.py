@@ -60,7 +60,8 @@ class ClemBot(commands.Bot):
         self.custom_prefix_route: custom_prefix_route.CustomPrefixRoute = None
         self.moderation_route: moderation_route.ModerationRoute = None
         self.claim_route: claim_route.ClaimRoute = None
-
+        self.reminder_route: reminder_route.ReminderRoute = None
+        
         self.load_cogs()
         self.active_services = {}
 

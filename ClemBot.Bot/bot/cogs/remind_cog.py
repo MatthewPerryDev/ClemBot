@@ -10,7 +10,6 @@ from bot.utils import converters
 
 log = logging.getLogger(__name__)
 
-'''
 class RemindCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -51,13 +50,12 @@ class RemindCog(commands.Cog):
                ctx.message.id,
                ctx.message.jump_url)
             embed.add_field(name="Status", value = "Reminder Created") 
-        except Exception:
+        except Exception as e:
 
             embed = discord.Embed(title="⏰Reminder", color = Colors.Error)
-            embed.add_field(name="Status", value = "Error")
+            embed.add_field(name="Status", value = e)
         await ctx.send(embed=embed)
             
 
 def setup(bot):
     bot.add_cog(RemindCog(bot))
-'''
