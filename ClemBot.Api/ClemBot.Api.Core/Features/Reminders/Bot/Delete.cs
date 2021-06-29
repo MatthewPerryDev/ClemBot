@@ -12,18 +12,15 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
     {
         public class Command : IRequest<Result<Model, QueryStatus>>
         {
-            public ulong UserId { get; set; }
-
-            public ulong MessageId { get; set; }
+            public int Id { get; set; }
         }
 
         public class Model
         {
+            public int Id { get; set; }
             public string Link { get; set; } = null!;
 
             public DateTime Time { get; set; }
-
-            public ulong MessageId { get; set; }
 
             public ulong UserId { get; set; }
         }
@@ -33,7 +30,7 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
             public async Task<Result<Model, QueryStatus>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var reminder = await _context.Reminders
-                    .FirstOrDefaultAsync(g => g.UserId == request.UserId && g.MessageId == request.MessageId);
+                    .FirstOrDefaultAsync(g => g.Id == request.Id);
 
                 if (reminder is null)
                 {
@@ -46,9 +43,9 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
 
                 return QueryResult<Model>.Success(new Model()
                 {
+                    Id = reminder.Id,
                     Link = reminder.Link,
                     Time = reminder.Time,
-                    MessageId = reminder.MessageId,
                     UserId = reminder.UserId
                 });
             }

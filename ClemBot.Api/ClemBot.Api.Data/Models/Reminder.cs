@@ -10,9 +10,6 @@ namespace ClemBot.Api.Data.Models
 
         public DateTime Time { get; set; }
 
-        public ulong MessageId { get; set; }
-        public Guild Message { get; set; }
-
         public ulong UserId { get; set; }
         public User User { get; set; }
     }

@@ -34,7 +34,7 @@ namespace ClemBot.Api.Core.Features.Reminders
 
         [HttpDelete("bot/[controller]")]
         [BotMasterAuthorize]
-        public async Task<IActionResult> Delete([FromRoute] Delete.Command command) =>
+        public async Task<IActionResult> Delete(Delete.Command command) =>
             await _mediator.Send(command) switch
             {
                 { Status: QueryStatus.Success } result => Ok(result.Value),

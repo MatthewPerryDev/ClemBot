@@ -18,11 +18,10 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
 
         public class Model
         {
+            public int Id { get; set; }
             public string Link { get; set; } = null!;
 
             public DateTime Time { get; set; }
-
-            public ulong MessageId { get; set; }
 
             public ulong UserId { get; set; }
         }
@@ -42,9 +41,9 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
                 return QueryResult<IEnumerable<Model>>.Success(
                     reminders.Select(x => new Model
                     {
+                        Id = x.Id,
                         Link = x.Link,
                         Time = x.Time,
-                        MessageId = x.MessageId,
                         UserId = x.UserId
                     })
                 );

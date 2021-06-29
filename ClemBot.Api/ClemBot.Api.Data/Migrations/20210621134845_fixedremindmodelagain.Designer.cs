@@ -4,15 +4,17 @@ using ClemBot.Api.Data.Contexts;
 using ClemBot.Api.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ClemBot.Api.Data.Migrations
 {
     [DbContext(typeof(ClemBotContext))]
-    partial class ClemBotContextModelSnapshot : ModelSnapshot
+    [Migration("20210621134845_fixedremindmodelagain")]
+    partial class fixedremindmodelagain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,21 +119,6 @@ namespace ClemBot.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Guilds");
-                });
-
-            modelBuilder.Entity("ClemBot.Api.Data.Models.GuildUser", b =>
-                {
-                    b.Property<decimal>("GuildId")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("UserId")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.HasKey("GuildId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GuildUser");
                 });
 
             modelBuilder.Entity("ClemBot.Api.Data.Models.Infraction", b =>
@@ -280,21 +267,6 @@ namespace ClemBot.Api.Data.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("ClemBot.Api.Data.Models.RoleUser", b =>
-                {
-                    b.Property<decimal>("RoleId")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("UserId")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.HasKey("RoleId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RoleUser");
-                });
-
             modelBuilder.Entity("ClemBot.Api.Data.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -370,6 +342,36 @@ namespace ClemBot.Api.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("GuildUser", b =>
+                {
+                    b.Property<decimal>("GuildsId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<decimal>("UsersId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("GuildsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("GuildUser");
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.Property<decimal>("RolesId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<decimal>("UsersId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("RolesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RoleUser");
+                });
+
             modelBuilder.Entity("ClemBot.Api.Data.Models.Channel", b =>
                 {
                     b.HasOne("ClemBot.Api.Data.Models.Guild", "Guild")
@@ -412,25 +414,6 @@ namespace ClemBot.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Channel");
-                });
-
-            modelBuilder.Entity("ClemBot.Api.Data.Models.GuildUser", b =>
-                {
-                    b.HasOne("ClemBot.Api.Data.Models.Guild", "Guild")
-                        .WithMany("GuildUsers")
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClemBot.Api.Data.Models.User", "User")
-                        .WithMany("GuildUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Guild");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClemBot.Api.Data.Models.Infraction", b =>
@@ -524,25 +507,6 @@ namespace ClemBot.Api.Data.Migrations
                     b.Navigation("Guild");
                 });
 
-            modelBuilder.Entity("ClemBot.Api.Data.Models.RoleUser", b =>
-                {
-                    b.HasOne("ClemBot.Api.Data.Models.Role", "Role")
-                        .WithMany("RoleUsers")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClemBot.Api.Data.Models.User", "User")
-                        .WithMany("RoleUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ClemBot.Api.Data.Models.Tag", b =>
                 {
                     b.HasOne("ClemBot.Api.Data.Models.Guild", "Guild")
@@ -589,6 +553,36 @@ namespace ClemBot.Api.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GuildUser", b =>
+                {
+                    b.HasOne("ClemBot.Api.Data.Models.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClemBot.Api.Data.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.HasOne("ClemBot.Api.Data.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClemBot.Api.Data.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ClemBot.Api.Data.Models.Channel", b =>
                 {
                     b.Navigation("DesignatedChannels");
@@ -601,8 +595,6 @@ namespace ClemBot.Api.Data.Migrations
                     b.Navigation("Channels");
 
                     b.Navigation("CustomPrefixes");
-
-                    b.Navigation("GuildUsers");
 
                     b.Navigation("Infractions");
 
@@ -623,8 +615,6 @@ namespace ClemBot.Api.Data.Migrations
             modelBuilder.Entity("ClemBot.Api.Data.Models.Role", b =>
                 {
                     b.Navigation("Claims");
-
-                    b.Navigation("RoleUsers");
                 });
 
             modelBuilder.Entity("ClemBot.Api.Data.Models.Tag", b =>
@@ -634,11 +624,7 @@ namespace ClemBot.Api.Data.Migrations
 
             modelBuilder.Entity("ClemBot.Api.Data.Models.User", b =>
                 {
-                    b.Navigation("GuildUsers");
-
                     b.Navigation("Messages");
-
-                    b.Navigation("RoleUsers");
 
                     b.Navigation("Tags");
                 });

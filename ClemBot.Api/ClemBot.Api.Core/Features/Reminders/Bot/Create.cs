@@ -17,14 +17,12 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
             {
                 RuleFor(p => p.Link).NotNull();
                 RuleFor(p => p.Time).NotNull();
-                RuleFor(p => p.MessageId).NotNull();
                 RuleFor(p => p.UserId).NotNull();
             }
         }
         public class Command : IRequest<Result<int, QueryStatus>>
         {
             public ulong UserId { get; set; }
-            public ulong MessageId { get; set; }
             public string Link { get; set; } = null!;
             public DateTime Time { get; set; }
 
@@ -34,13 +32,11 @@ namespace ClemBot.Api.Core.Features.Reminders.Bot
         {
             public async Task<Result<int, QueryStatus>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var reminder = new Reminder()
+                var reminder = new Reminder
                 {
-
                     Link = request.Link,
                     UserId = request.UserId,
-                    Time = request.Time,
-                    MessageId = request.MessageId,
+                    Time = request.Time
                 };
 
                 _context.Reminders.Add(reminder);
