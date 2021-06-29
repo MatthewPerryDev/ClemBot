@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import discord
+from marshmallow.fields import DateTime
 
 from bot.consts import Colors
 from bot.messaging.events import Events
@@ -16,41 +17,33 @@ class RemindService(BaseService):
         super().__init__(bot)
         
     @BaseService.Listener(Events.on_set_reminder)
-    async def on_set_reminder(self, userId: int, wait: converters.Duration, messageId: int, link: str):
-        await self.bot.reminder_route.create_reminder(userId, messageId, link, wait.isoformat())
-        self.bot.scheduler.schedule_at(self.reminder_callback(userId, messageId), time=wait)
+    async def on_set_reminder(self, userId: int, wait: DateTime, link: str):
+        reminderId: int = await self.bot.reminder_route.create_reminder(userId, link, wait.strftime('%Y-%m-%dT%H:%M:%S.%f'))
 
-    async def reminder_callback(self, userId: int, messageId: int):     
+        self.bot.scheduler.schedule_at(self.reminder_callback(reminderId), time=wait)
 
-        data = await self.bot.reminder_route.retrieve_reminder(userId, messageId)
-        
-        user: discord.User = self.bot.get_user(data['fk_userId'])
+    async def reminder_callback(self, reminderId: int):     
 
-        message = await self.bot.reminder_route.retrieve_reminder(data['fk_userId'], data['fk_messageId'])
+        data = await self.bot.reminder_route.retrieve_reminder(reminderId)
         
-        time = message['time'].split('.')[0]
-        message = message['content'].split(' ', 2)
-        
-        if len(message) < 3:
-            message = 'None'
-        else:
-            message = message[2]
-        
+        user: discord.User = self.bot.get_user(data['userId'])
+
+        time = data['time']
+    
         embed = discord.Embed(title='⏰Reminder', color = Colors.ClemsonOrange)
-        embed.add_field(name='Message', value = message, inline= False)
         embed.add_field(name='Message Date', value = time)
         embed.add_field(name='Message Link', value = "[message link](" + data['link'] + ")", inline=False)
         await user.send(embed = embed)
         
-        await self.bot.reminder_route.delete_reminder(data['fk_userId'], data['fk_messageId'])
+        await self.bot.reminder_route.delete_reminder(reminderId)
 
     async def load_service(self):
         reminders = await self.bot.reminder_route.bulk_retrieve_reminder()
         if not reminders:
             return 
         for reminder in reminders:
-            wait: datetime = datetime.strptime(reminder['time'], '%Y-%m-%d %H:%M:%S.%f')
+            wait: datetime = datetime.strptime(reminder['time'], '%Y-%m-%dT%H:%M:%S.%f')
             if (wait - datetime.utcnow()).total_seconds() <= 0:
-                await self.reminder_callback(reminder['fk_userId'], reminder['fk_messageId'])
+                await self.reminder_callback(reminderId=reminder['id'])
             else:
-                self.bot.scheduler.schedule_at(self.reminder_callback(reminder['fk_userId'], reminder['fk_messageId']), time=wait)
+                self.bot.scheduler.schedule_at(self.reminder_callback(reminder['id']), time=wait)

@@ -47,7 +47,6 @@ class RemindCog(commands.Cog):
                Events.on_set_reminder,
                ctx.author.id,
                wait,
-               ctx.message.id,
                ctx.message.jump_url)
             embed.add_field(name="Status", value = "Reminder Created") 
         except Exception as e:
