@@ -18,7 +18,7 @@ class RemindService(BaseService):
         
     @BaseService.Listener(Events.on_set_reminder)
     async def on_set_reminder(self, userId: int, wait: DateTime, link: str):
-        reminderId: int = await self.bot.reminder_route.create_reminder(userId, link, wait.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+        reminderId: int = await self.bot.reminder_route.create_reminder(userId, link, wait)
 
         self.bot.scheduler.schedule_at(self.reminder_callback(reminderId), time=wait)
 
