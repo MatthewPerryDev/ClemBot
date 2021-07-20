@@ -232,11 +232,11 @@ namespace ClemBot.Api.Data.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<decimal?>("GuildId")
-                        .HasColumnType("numeric(20,0)");
-
                     b.Property<string>("Link")
                         .HasColumnType("text");
+
+                    b.Property<decimal>("MessageId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("timestamp without time zone");
@@ -246,7 +246,7 @@ namespace ClemBot.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GuildId");
+                    b.HasIndex("MessageId");
 
                     b.HasIndex("UserId");
 
@@ -500,15 +500,19 @@ namespace ClemBot.Api.Data.Migrations
 
             modelBuilder.Entity("ClemBot.Api.Data.Models.Reminder", b =>
                 {
-                    b.HasOne("ClemBot.Api.Data.Models.Guild", null)
+                    b.HasOne("ClemBot.Api.Data.Models.Guild", "Message")
                         .WithMany("Reminders")
-                        .HasForeignKey("GuildId");
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ClemBot.Api.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Message");
 
                     b.Navigation("User");
                 });
